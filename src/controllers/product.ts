@@ -10,6 +10,7 @@ import ErrorHandler from "../utils/utility-class.js";
 import { rm } from "fs";
 import { myCache } from "../app.js";
 import { invalidateCache } from "../utils/features.js";
+import { uploadBufferToCloudinary } from "../utils/cloudinary.js";
 //import { faker } from "@faker-js/faker";
 
 // Revalidate on New,Update,Delete Product & on New Order
@@ -88,20 +89,21 @@ export const newProduct = TryCatch(
 
     if (!photo) return next(new ErrorHandler("Please add Photo", 400));
 
-    if (!name || !price || !stock || !category) {
-      rm(photo.path, () => {
-        console.log("Deleted");
-      });
+    // if (!name || !price || !stock || !category) {
+    //   rm(photo.path, () => {
+    //     console.log("Deleted");
+    //   });
 
-      return next(new ErrorHandler("Please enter All Fields", 400));
-    }
+    //   return next(new ErrorHandler("Please enter All Fields", 400));
+    // }
+     const secureUrl = await uploadBufferToCloudinary(photo.buffer);
 
     await Product.create({
       name,
       price,
       stock,
       category: category.toLowerCase(),
-      photo: photo.path,
+      photo:secureUrl ,
     });
 
     invalidateCache({ product: true, admin: true });
@@ -122,10 +124,8 @@ export const updateProduct = TryCatch(async (req, res, next) => {
   if (!product) return next(new ErrorHandler("Product Not Found", 404));
 
   if (photo) {
-    rm(product.photo!, () => {
-      console.log("Old Photo Deleted");
-    });
-    product.photo = photo.path;
+     const secureUrl = await uploadBufferToCloudinary(photo.buffer);
+    product.photo = secureUrl;
   }
 
   if (name) product.name = name;
@@ -151,9 +151,7 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
   if (!product) return next(new ErrorHandler("Product Not Found", 404));
 
-  rm(product.photo!, () => {
-    console.log("Product Photo Deleted");
-  });
+ 
 
   await product.deleteOne();
 
