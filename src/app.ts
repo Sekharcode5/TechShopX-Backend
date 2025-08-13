@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: ["https://shopify-frontend-two.vercel.app", "http://localhost:5173", "https://shopify-frontend-git-main-sekhars-projects-b5d3087c.vercel.app", "https://shopify-frontend-three.vercel.app"],
+    origin: ["https://tech-sphere-frontend-git-main-sekhars-projects-b5d3087c.vercel.app", "http://localhost:5173",  "https://tech-sphere-frontend-sekhars-projects-b5d3087c.vercel.app","https://tech-sphere-frontend.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -58,7 +58,7 @@ app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/payment", paymentRoute);
 app.use("/api/v1/dashboard", dashboardRoute);
 
-app.use("/uploads", express.static("uploads"));
+
 app.use(errorMiddleware);
 
 app.listen(port, () => {
